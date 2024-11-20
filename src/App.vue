@@ -9,6 +9,9 @@
         <p class="pt-2 text-slate-500">* 本站承诺不会上传、保存用户的任何图片信息，水印处理全部在浏览器中进行。</p>
         <p class="text-stone-600">* 本站支持网或开启飞行模式后离线使用，无需担心隐私问题。</p>
         <p>水印样式多样调节,不限制文件大小,水印处理时间越长与文件大小有关</p>
+        <p style="font-weight: bold;">· 开源地址: <a style="color: #0969da;" href="https://github.com/uxiaohan/WebWatermark"
+            target="_blank">Web-Watermark</a>
+        </p>
       </AlertDescription>
     </Alert>
 
