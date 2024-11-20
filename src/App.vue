@@ -102,7 +102,7 @@ const imgChange = (v: Event) => {
 // 渲染图片
 const IMG_DOM = ref<any>(null)
 const CANVAS_DOM = ref<any>(null)
-const renderCanvas = () => {
+const renderCanvas = async () => {
   if (!IMG_DOM.value) return;
   const ctx = CANVAS_DOM.value.getContext("2d")
   ctx.canvas.width = IMG_DOM.value.width;
@@ -127,7 +127,15 @@ const renderCanvas = () => {
       ctx.fillText(content, v, h);
     }
   }
-  CANVAS_URL.value = ctx.canvas.toDataURL(IMG_TYPE.value)
+  // 转Blob
+  const CanvasDataURL = ctx.canvas.toDataURL(IMG_TYPE.value)
+  const byteString = atob(CanvasDataURL.split(",")[1]);
+  const arrayBuffer = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) {
+    arrayBuffer[i] = byteString.charCodeAt(i);
+  }
+  const blob = new Blob([arrayBuffer], { type: IMG_TYPE.value })
+  CANVAS_URL.value = URL.createObjectURL(blob);
 }
 
 // 下载图片
