@@ -1,20 +1,22 @@
 <template>
+  <!-- 顶部 -->
   <Header title="Web Watermark" desc="你的在线水印助手" />
   <main class="p-4">
+    <!-- 公告 -->
     <Alert class="pt-0 pb-2 sm:py-4">
       <AlertTitle class="font-bold hidden sm:flex sm:gap-2">
         <RocketIcon class="h-4 w-4 hidden sm:flex" /> Heads up!
       </AlertTitle>
       <AlertDescription class="p-0 text-xs sm:text-sm">
         <p class="pt-2 text-slate-500">* 本站承诺不会上传、保存用户的任何图片信息，水印处理全部在浏览器中进行。</p>
-        <p class="text-stone-600">* 本站支持网或开启飞行模式后离线使用，无需担心隐私问题。</p>
+        <p class="text-stone-600">* 本站支持网或开启飞行模式后离 线使用，无需担心隐私问题。</p>
         <p>水印样式多样调节,不限制文件大小,水印处理时间越长与文件大小有关</p>
         <p style="font-weight: bold;">· 开源地址: <a style="color: #0969da;" href="https://github.com/uxiaohan/WebWatermark"
             target="_blank">Web-Watermark</a>
         </p>
       </AlertDescription>
     </Alert>
-
+    <!-- 主体 -->
     <div class="w-full h-max pt-4 flex flex-col gap-2">
       <Input v-model="WATERMARK_VAL" type="text" placeholder="请输入水印内容" @change="renderCanvas" />
       <section
@@ -28,7 +30,6 @@
           <Slider v-model="SLIDER_VAL.OPACTY_VAL" :max="100" :min="1" />
         </div>
       </section>
-
       <section
         class="flex [&>div]:box-border [&>div]:p-2	[&>div]:w-[50%]	[&>div]:flex [&>div]:gap-4 [&>div]:flex-col	[&>div]:justify-between">
         <div>
@@ -41,25 +42,23 @@
         </div>
       </section>
     </div>
-
+    <!-- 功能按钮 -->
     <div class="watermark-button flex justify-between pt-4">
       <Button class="relative">更换图片<input class="absolute opacity-0 top-0 left-0 w-full h-full" type="file"
           accept="image/*" @change="imgChange"></Button>
-      <Button @click="downLoadImg" :disabled="!CANVAS_URL">保存图片</Button>
+      <Button @click="downLoadImg" :disabled="!IMG_NAME">保存图片</Button>
     </div>
-
+    <!-- 图片展示 -->
     <div class="img-main w-full mt-4">
-      <!-- <img ref="imgRef" class="w-full" :src="IMG_URL"> -->
       <canvas class="w-full" ref="CANVAS_DOM"></canvas>
     </div>
-
   </main>
-
 
   <Footer />
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import vh from 'vh-plugin'
 import Header from '@/components/Header/Header.vue'
 import Footer from '@/components/Footer/Footer.vue'
 import { RocketIcon } from '@radix-icons/vue'
@@ -72,7 +71,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 const WATERMARK_VAL = ref<string>('Han水印助手')
 // 水印颜色
 const COLOR_VAL = ref<string>('#ffffff')
-
+// 水印配置
 const SLIDER_VAL = ref<any>({
   // 水印透明度
   OPACTY_VAL: [50],
@@ -81,21 +80,22 @@ const SLIDER_VAL = ref<any>({
   // 水印间隔
   GAP_VAL: [150],
 })
-const CANVAS_URL = ref<string>('')
 
 // 图片切换
 const imgChange = (v: Event) => {
   if (!v) return
-  CANVAS_URL.value = ''
+  vh.showLoading()
   const FileTarget: any = v.target;
   const _File: any = FileTarget.files[0];
   IMG_NAME.value = _File.name
   IMG_TYPE.value = _File.type
   const IMG = document.createElement('img');
   IMG.src = URL.createObjectURL(_File);
-  IMG.addEventListener('load', () => {
+  IMG.addEventListener('load', async () => {
     IMG_DOM.value = IMG
     renderCanvas()
+    await new Promise((r) => setTimeout(r, 566));
+    vh.hideLoading()
   });
 }
 
@@ -127,45 +127,31 @@ const renderCanvas = async () => {
       ctx.fillText(content, v, h);
     }
   }
-  // 转Blob
-  const CanvasDataURL = ctx.canvas.toDataURL(IMG_TYPE.value)
-  const byteString = atob(CanvasDataURL.split(",")[1]);
-  const arrayBuffer = new Uint8Array(byteString.length);
-  for (let i = 0; i < byteString.length; i++) {
-    arrayBuffer[i] = byteString.charCodeAt(i);
-  }
-  const blob = new Blob([arrayBuffer], { type: IMG_TYPE.value })
-  CANVAS_URL.value = URL.createObjectURL(blob);
 }
 
 // 下载图片
 const IMG_NAME = ref<string>('')
 const IMG_TYPE = ref<string>('')
 const downLoadImg = () => {
-  if (!CANVAS_URL.value) return
-  const lastDotIndex = IMG_NAME.value.lastIndexOf('.');
-  const FileDownName = IMG_NAME.value.substring(0, lastDotIndex) + '_complete' + IMG_NAME.value.substring(lastDotIndex);
-  const vhOpenWinA = document.createElement("a");
-  vhOpenWinA.className = "vh-open-new-window-a";
-  vhOpenWinA.style.position = "fixed";
-  vhOpenWinA.style.left = "0";
-  vhOpenWinA.style.top = "0";
-  vhOpenWinA.style.opacity = "0";
-  vhOpenWinA.style.pointerEvents = "none";
-  vhOpenWinA.href = CANVAS_URL.value;
-  vhOpenWinA.download = FileDownName
-  if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) vhOpenWinA.target = "_blank";
-  document.body.appendChild(vhOpenWinA);
-  setTimeout(() => {
-    vhOpenWinA.click();
-    vhOpenWinA.remove();
-  }, 66);
+  if (!IMG_NAME.value) return
+  vh.showLoading()
+  CANVAS_DOM.value.toBlob(async (v) => {
+    const BlobURL = URL.createObjectURL(v);
+    // 重命名
+    const lastDotIndex = IMG_NAME.value.lastIndexOf('.');
+    const FileDownName = `${IMG_NAME.value.substring(0, lastDotIndex)}_complete.${v.type.split('/')[1]}`;
+    // 创建a标签
+    await new Promise((r) => setTimeout(r, 466));
+    await vh.OpenURL(BlobURL, FileDownName)
+    vh.hideLoading()
+    // 卸载
+    URL.revokeObjectURL(BlobURL);
+  }, IMG_TYPE.value)
 }
 
 // 值变化事件
 watch(SLIDER_VAL, () => {
   renderCanvas()
-  console.log('变化拉');
 }, { deep: true })
 
 </script>
