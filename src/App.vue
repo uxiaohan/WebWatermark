@@ -23,7 +23,7 @@
         class="flex [&>div]:box-border [&>div]:p-2	[&>div]:w-[50%]	[&>div]:flex [&>div]:gap-2 [&>div]:flex-col	[&>div]:justify-between">
         <div>
           <span class="w-max text-sm">水印颜色</span>
-          <Input v-model="COLOR_VAL" type="color" style="background-color: #EFEFEF;" @change="renderCanvas" />
+          <Input v-model="SLIDER_VAL.COLOR_VAL" type="color" style="background-color: #EFEFEF;" />
         </div>
         <div style="padding-bottom: 1.4rem;">
           <span class="w-max text-sm">水印透明</span>
@@ -69,10 +69,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // 水印内容
 const WATERMARK_VAL = ref<string>('Han水印助手')
-// 水印颜色
-const COLOR_VAL = ref<string>('#ffffff')
 // 水印配置
 const SLIDER_VAL = ref<any>({
+  // 水印颜色
+  COLOR_VAL: '#ffffff',
   // 水印透明度
   OPACTY_VAL: [50],
   // 水印大小
@@ -111,7 +111,7 @@ const renderCanvas = async () => {
   ctx.canvas.style.height = (IMG_DOM.value.height / IMG_DOM.value.width) * 100 + '%';
   ctx.restore();
   ctx.drawImage(IMG_DOM.value, 0, 0);
-  ctx.fillStyle = COLOR_VAL.value;
+  ctx.fillStyle = SLIDER_VAL.value.COLOR_VAL;
   ctx.globalAlpha = SLIDER_VAL.value.OPACTY_VAL[0] / 100;
   const size = (SLIDER_VAL.value.SIZE_VAL[0] * maxSize / 100);
   ctx.font = size + 'px "sans-serif"';
