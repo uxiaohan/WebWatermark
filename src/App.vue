@@ -135,7 +135,7 @@ const IMG_TYPE = ref<string>('')
 const downLoadImg = () => {
   if (!IMG_NAME.value) return
   vh.showLoading()
-  CANVAS_DOM.value.toBlob(async (v) => {
+  CANVAS_DOM.value.toBlob(async (v: Blob) => {
     const BlobURL = URL.createObjectURL(v);
     // 重命名
     const lastDotIndex = IMG_NAME.value.lastIndexOf('.');
