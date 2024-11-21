@@ -83,9 +83,9 @@ const SLIDER_VAL = ref<any>({
 
 // 图片切换
 const imgChange = (v: Event) => {
-  if (!v) return
-  vh.showLoading()
   const FileTarget: any = v.target;
+  if (FileTarget.files.length < 1) return
+  vh.showLoading()
   const _File: any = FileTarget.files[0];
   IMG_NAME.value = _File.name
   IMG_TYPE.value = _File.type
