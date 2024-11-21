@@ -142,7 +142,7 @@ const downLoadImg = () => {
     const FileDownName = `${IMG_NAME.value.substring(0, lastDotIndex)}_complete.${v.type.split('/')[1]}`;
     // 创建a标签
     await new Promise((r) => setTimeout(r, 466));
-    await vh.OpenURL(BlobURL, FileDownName, '_self')
+    await vh.OpenURL(BlobURL, FileDownName)
     vh.hideLoading()
     // 卸载
     URL.revokeObjectURL(BlobURL);
