@@ -10,7 +10,7 @@
       </section>
       <section class="flex flex-col items-center gap-2">
         <div class="flex gap-6">
-          <a title="打赏站长" target="_blank" href="@/assets/images/reward.webp">
+          <a title="打赏站长" target="_blank" href="/reward.webp">
             <img class="w-8" src="@/assets/images/footer/shang.svg" />
           </a>
           <a title="Github" target="_blank" rel="nofollow" href="https://github.com/uxiaohan">
